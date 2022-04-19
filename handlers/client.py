@@ -20,13 +20,16 @@ async def forecast_command(message: types.Message):
     elif len(message.text.split()) == 2:
         name = message.text.split()[1].upper()
         s = get_crypto(name)
-        predict = round(uniform(s*0.95, s*1.05), 2)
+        if s != None:
+            predict = round(uniform(s*0.95, s*1.05), 2)
 
-        database.insert_into_db(name, predict, datetime.now())
-        k = database.get_cpyptoprice(name)
+            database.insert_into_db(name, predict, datetime.now())
+            k = database.get_cpyptoprice(name)
 
-        await message.answer(f"Стоимость на данный момент: {s}")
-        await message.answer(f"Прогноз на завтра: {k}")
+            await message.answer(f"Стоимость на данный момент: {s}")
+            await message.answer(f"Прогноз на завтра: {k}")
+        else:
+            await message.answer("Данной криптовалюты нет в базе данных")
     else:
         await message.answer("Комманда была введена некоректно!")
 
@@ -38,14 +41,16 @@ async def enter_cryptoname(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             data['text'] = message.text.upper()
             s = get_crypto(tuple(data.values())[0])
+        if s != None:
+            name = message.text.upper()
+            predict = round(uniform(s * 0.95, s * 1.05), 2)
+            database.insert_into_db(name, predict, datetime.now())
+            k = database.get_cpyptoprice(name)
 
-        name = message.text.upper()
-        predict = round(uniform(s * 0.95, s * 1.05), 2)
-        database.insert_into_db(name, predict, datetime.now())
-        k = database.get_cpyptoprice(name)
-
-        await message.answer(f"Стоимость на данный момент: {s}")
-        await message.answer(f"Прогноз на завтра: {k}")
+            await message.answer(f"Стоимость на данный момент: {s}")
+            await message.answer(f"Прогноз на завтра: {k}")
+        else:
+            await message.answer("Данной криптовалюты нет в баззе данных")
         await state.finish()
 
 async def echo(message: types.Message):

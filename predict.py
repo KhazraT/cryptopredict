@@ -12,4 +12,4 @@ def get_crypto(symbol: str):
         ltc = web.DataReader(f'{symbol}-USD', 'yahoo', day, day)
         return round(list(ltc['Adj Close'])[0], 2)
     else:
-        return "Данной криптовалюты нет в базе данных"
+        return None
